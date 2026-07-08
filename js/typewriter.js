@@ -69,7 +69,7 @@ class Typewriter {
     return new Promise((resolve) => {
       this.textEl.classList.remove('line-reveal');
       void this.textEl.offsetWidth;
-      this.textEl.textContent = message;
+      this.textEl.innerHTML = message.replace(/\n/g, '<br>');
       this.textEl.classList.add('line-reveal');
       this._playKeySound();
 

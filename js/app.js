@@ -8,8 +8,8 @@
 
 const CONFIG = {
   introMessages: [
-    'You are not alone, We are here with you...',
-    'Just like the sun has illuminated the earth for eternity, may your light never fade!',
+    'You are not alone,\nwe are here with you...',
+    'Just like the sun has illuminated the earth for eternity,\nmay your light never fade!',
   ],
   storySlideDuration: 5000,
   storyTransitionDelay: 800,
