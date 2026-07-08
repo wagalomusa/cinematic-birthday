@@ -160,6 +160,8 @@ class CinematicExperience {
     this.nextButtons = [];
     this.introTypewriter = null;
     this.skipIntroAdvance = false;
+    this.audioUnlocked = false;
+    this.pendingPlayback = null;
 
     // Song player state
     this.isSongPlaying = false;
@@ -188,6 +190,7 @@ class CinematicExperience {
     this._bindControls();
     this._bindAudioStateSync();
     this._bindVisibilityHandling();
+    this._bindUserGestureUnlock();
     this._start();
   }
 
@@ -228,6 +231,7 @@ class CinematicExperience {
     this.songTimeDuration = document.getElementById('song-time-duration');
 
     this.lyricsContainer = document.getElementById('song-lyrics');
+    this.gestureHint = document.getElementById('gesture-hint');
   }
 
   _initVisualizers() {
@@ -473,6 +477,29 @@ class CinematicExperience {
     });
   }
 
+  _bindUserGestureUnlock() {
+    const unlock = () => {
+      if (this.audioUnlocked) return;
+
+      this.audioUnlocked = true;
+      this._resumeAudioContext();
+      this._hideGestureHint();
+
+      if (this.pendingPlayback === 'voice') {
+        this.pendingPlayback = null;
+        this._play().catch(() => {});
+      } else if (this.pendingPlayback === 'song') {
+        this.pendingPlayback = null;
+        this._playSong().catch(() => {});
+      }
+    };
+
+    document.addEventListener('pointerdown', unlock, { once: true, capture: true });
+    document.addEventListener('touchstart', unlock, { once: true, capture: true });
+    document.addEventListener('click', unlock, { once: true, capture: true });
+    document.addEventListener('keydown', unlock, { once: true, capture: true });
+  }
+
   async _requestWakeLock() {
     if (!('wakeLock' in navigator)) {
       console.warn('Wake Lock API not supported in this browser — screen may time out during playback.');
@@ -514,6 +541,7 @@ class CinematicExperience {
   }
 
   _start() {
+    this._showGestureHint();
     this._runIntro();
   }
 
@@ -685,13 +713,30 @@ class CinematicExperience {
     this._setPlayState(false);
 
     if (autoPlay) {
-      await this._wait(600);
-      this._play();
+      this._queuePlayback('voice');
     }
+  }
+
+  _queuePlayback(type) {
+    if (this.audioUnlocked) {
+      if (type === 'voice') {
+        this._play().catch(() => {});
+      } else if (type === 'song') {
+        this._playSong().catch(() => {});
+      }
+      return;
+    }
+
+    this.pendingPlayback = type;
   }
 
   async _play() {
     if (!this.currentAudio) return;
+
+    if (!this.audioUnlocked) {
+      this.pendingPlayback = 'voice';
+      return;
+    }
 
     this._resumeAudioContext();
 
@@ -989,6 +1034,11 @@ class CinematicExperience {
   }
 
   async _playSong() {
+    if (!this.audioUnlocked) {
+      this.pendingPlayback = 'song';
+      return;
+    }
+
     this._resumeAudioContext();
 
     try {
@@ -1087,6 +1137,18 @@ class CinematicExperience {
   }
 
   /* ─── Utilities ─── */
+
+  _showGestureHint() {
+    if (this.gestureHint) {
+      this.gestureHint.classList.add('visible');
+    }
+  }
+
+  _hideGestureHint() {
+    if (this.gestureHint) {
+      this.gestureHint.classList.remove('visible');
+    }
+  }
 
   _resumeAudioContext() {
     if (this.voiceVisualizer?.audioContext?.state === 'suspended') {

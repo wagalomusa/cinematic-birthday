@@ -326,6 +326,23 @@ html, body {
   opacity: 1;
 }
 
+.gesture-hint {
+  margin-top: 1.2rem;
+  color: rgba(255,255,255,0.82);
+  font-size: 0.95rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  pointer-events: none;
+}
+
+.gesture-hint.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
 @keyframes cursor-blink {
   0%, 100% { opacity: 1; }
   50% { opacity: 0; }
