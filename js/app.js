@@ -16,10 +16,25 @@ const CONFIG = {
   voiceMessages: [
     {
       id: 1,
+      speaker: 'Mummy',
+      subtitle: 'has a loving message for you',
+      audio: 'audio-mummy',
+      portrait: null,
+      portraitType: 'text',
+      skin: 'rose',
+      visualizer: {
+        color: 'rgba(255, 182, 193, 0.85)',
+        glowColor: 'rgba(255, 140, 170, 0.4)',
+        secondaryColor: 'rgba(255, 220, 230, 0.7)',
+      },
+    },
+    {
+      id: 2,
       speaker: 'Raniah',
       subtitle: 'has something beautiful to say',
       audio: 'audio-raniah',
       portrait: 'assets/images/speakers/Raniah.jpeg',
+      portraitType: 'image',
       skin: 'lavender',
       visualizer: {
         color: 'rgba(200, 180, 255, 0.85)',
@@ -28,11 +43,12 @@ const CONFIG = {
       },
     },
     {
-      id: 2,
+      id: 3,
       speaker: 'Marie',
       subtitle: 'wants you to know something',
       audio: 'audio-marie',
       portrait: 'assets/images/speakers/Marie.jpeg',
+      portraitType: 'image',
       skin: 'peach',
       visualizer: {
         color: 'rgba(255, 200, 160, 0.85)',
@@ -41,11 +57,12 @@ const CONFIG = {
       },
     },
     {
-      id: 3,
+      id: 4,
       speaker: 'Bahiga',
       subtitle: 'left you a precious message',
       audio: 'audio-bahiga',
       portrait: 'assets/images/speakers/Bahiga.jpeg',
+      portraitType: 'image',
       skin: 'lilac',
       visualizer: {
         color: 'rgba(224, 184, 240, 0.85)',
@@ -54,11 +71,12 @@ const CONFIG = {
       },
     },
     {
-      id: 4,
+      id: 5,
       speaker: 'Leylah',
       subtitle: 'has words from the heart',
       audio: 'audio-leylah',
       portrait: 'assets/images/speakers/Leylah.jpeg',
+      portraitType: 'image',
       skin: 'champagne',
       visualizer: {
         color: 'rgba(240, 216, 152, 0.85)',
@@ -67,11 +85,12 @@ const CONFIG = {
       },
     },
     {
-      id: 5,
+      id: 6,
       speaker: 'Glosh',
       subtitle: 'sent you a special message',
       audio: 'audio-glosh',
       portrait: 'assets/images/speakers/Glosh.jpeg',
+      portraitType: 'image',
       skin: 'sage',
       visualizer: {
         color: 'rgba(180, 214, 190, 0.85)',
@@ -701,8 +720,26 @@ class CinematicExperience {
     this.voiceLabel.textContent = `Message ${msg.id} of ${CONFIG.voiceMessages.length}`;
     this.voiceSpeaker.textContent = msg.speaker;
     this.voiceSubtitle.textContent = msg.subtitle;
-    this.voicePortrait.src = msg.portrait;
-    this.voicePortrait.alt = msg.speaker;
+
+    if (msg.portraitType === 'text') {
+      this.voicePortrait.classList.add('voice-portrait--text');
+      this.voicePortrait.classList.remove('voice-portrait--image');
+      this.voicePortrait.innerHTML = `
+        <span class="voice-portrait-label">${msg.speaker}</span>
+        <span class="voice-portrait-heart">❤</span>
+      `;
+      this.voicePortrait.style.backgroundImage = '';
+      this.voicePortrait.style.backgroundSize = '';
+      this.voicePortrait.style.backgroundPosition = '';
+    } else {
+      this.voicePortrait.classList.remove('voice-portrait--text');
+      this.voicePortrait.classList.add('voice-portrait--image');
+      this.voicePortrait.innerHTML = '';
+      this.voicePortrait.style.backgroundImage = msg.portrait ? `url('${msg.portrait}')` : '';
+      this.voicePortrait.style.backgroundSize = 'cover';
+      this.voicePortrait.style.backgroundPosition = 'center';
+    }
+    this.voicePortrait.setAttribute('aria-label', msg.speaker);
 
     this._applySkin(msg);
     this._updateDots(index);
