@@ -487,11 +487,19 @@ class CinematicExperience {
   }
 
   async _requestWakeLock() {
-    if (!('wakeLock' in navigator)) return;
+    if (!('wakeLock' in navigator)) {
+      console.warn('Wake Lock API not supported in this browser — screen may time out during playback.');
+      return;
+    }
+    if (!window.isSecureContext) {
+      console.warn('Wake Lock requires a secure context (https:// or localhost) — it will not work when opening the file directly (file://). Host it on a server to enable this.');
+      return;
+    }
     if (this.wakeLock) return;
 
     try {
       this.wakeLock = await navigator.wakeLock.request('screen');
+      console.log('Wake lock acquired — screen should stay on during playback.');
       this.wakeLock.addEventListener('release', () => {
         this.wakeLock = null;
       });
@@ -590,8 +598,10 @@ class CinematicExperience {
     this.skipIntroAdvance = false;
 
     const typewriter = new Typewriter(textEl, cursorEl, {
-      speed: 32,
-      pauseBetween: 1600,
+      speed: 28,
+      pauseBetween: 1200,
+      chaos: 0.12,
+      voiceEnabled: true,
       onComplete: () => {
         if (this.skipIntroAdvance) return;
         this._goToScene('story').then(() => this._runStory());
@@ -718,6 +728,7 @@ class CinematicExperience {
     this.isPaused = false;
     this._setPlayState(true);
     this.voiceCard.classList.add('playing');
+    this._requestWakeLock();
 
     this.currentAudio.onended = () => {
       if (CONFIG.autoAdvanceOnEnd && !this.isPaused) {
@@ -823,6 +834,7 @@ class CinematicExperience {
     this.voiceCard.classList.remove('playing');
     this.voiceVisualizer.stop();
     this._stopProgressLoop();
+    this._releaseWakeLock();
   }
 
   _setPlayState(playing) {
@@ -915,8 +927,20 @@ class CinematicExperience {
     this.voiceTransition.classList.remove('hidden');
     this.voiceTransition.classList.add('visible');
 
+    // Hide the voice card now too. The transition overlay's backdrop
+    // is semi-transparent, not solid — if we leave the last speaker's
+    // card sitting there at full opacity, it becomes visible again
+    // right as the overlay itself fades out a moment later, looking
+    // like their card "comes back on" briefly before the song scene.
+    this.voiceCard.classList.remove('visible');
+
     await this._wait(CONFIG.finalTransitionDisplayTime);
     this._hideTransition();
+
+    // Let the overlay's own fade-out (1s, see _hideTransition) finish
+    // before handing off to the scene change — otherwise the two
+    // fades overlap and create the same flash this fix is for.
+    await this._wait(1000);
   }
 
   _hideTransition() {
@@ -954,6 +978,7 @@ class CinematicExperience {
       this._stopSongProgressLoop();
       this.isSongPlaying = false;
       this.isSongPaused = false;
+      this._releaseWakeLock();
 
       if (CONFIG.autoAdvanceAfterSong) {
         await this._goToScene('ending');
@@ -989,6 +1014,7 @@ class CinematicExperience {
     this.isSongPlaying = true;
     this.isSongPaused = false;
     this._setSongPlayState(true);
+    this._requestWakeLock();
 
     this._startSongProgressLoop();
   }
@@ -1002,12 +1028,18 @@ class CinematicExperience {
     this._setSongPlayState(false);
     this.songVisualizer.stop();
     this._stopSongProgressLoop();
+    this._releaseWakeLock();
   }
 
   _toggleSongPlayPause() {
     this._resumeAudioContext();
 
-    if (this.isSongPlaying) {
+    // Check the actual audio element rather than our own flag —
+    // more robust against any state drift, and makes the button
+    // reflect reality regardless of what caused a discrepancy.
+    const actuallyPlaying = this.audioSong && !this.audioSong.paused;
+
+    if (actuallyPlaying) {
       this._pauseSong();
     } else {
       this._playSong();

@@ -34,6 +34,8 @@ class NightSky {
     this.shootingTimer = 0;
     this.nextShootingIn = this._randomShootingDelay();
     this.lastTime = performance.now();
+    this.targetFps = 30;
+    this.reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     this._buildGlowSprites();
 
@@ -127,8 +129,8 @@ class NightSky {
   _generateStars() {
     // Slightly lower density than before — fewer, more deliberate
     // stars reads just as rich but costs meaningfully less per frame.
-    const density = 1 / 3800;
-    const count = Math.max(50, Math.floor(this.width * this.height * density));
+    const density = 1 / 5200;
+    const count = Math.max(36, Math.floor(this.width * this.height * density));
     this.stars = [];
 
     for (let i = 0; i < count; i++) {
@@ -167,7 +169,7 @@ class NightSky {
         // Only the brighter/larger third of stars get a glow sprite
         // drawn behind them — small dim stars don't need one, and
         // skipping it for most stars is a big chunk of the savings.
-        glow: roll >= 0.9,
+        glow: roll >= 0.92,
       });
     }
   }
@@ -212,7 +214,7 @@ class NightSky {
   /* ─── Fireflies ─── */
 
   _generateFireflies() {
-    const count = Math.max(6, Math.floor(this.width / 240));
+    const count = Math.max(4, Math.floor(this.width / 320));
     this.fireflies = [];
     for (let i = 0; i < count; i++) {
       this.fireflies.push(this._spawnFirefly(true));
@@ -361,7 +363,13 @@ class NightSky {
   _loop(now) {
     requestAnimationFrame(this._loop);
 
-    const dt = Math.min(0.05, (now - this.lastTime) / 1000);
+    if (this.reduceMotion || document.hidden) return;
+
+    const elapsed = now - this.lastTime;
+    const frameInterval = 1000 / this.targetFps;
+    if (elapsed < frameInterval) return;
+
+    const dt = Math.min(0.05, elapsed / 1000);
     this.lastTime = now;
 
     // Only draw while the intro scene is on screen — saves CPU

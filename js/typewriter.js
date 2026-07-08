@@ -5,10 +5,12 @@ class Typewriter {
   constructor(textEl, cursorEl, options = {}) {
     this.textEl = textEl;
     this.cursorEl = cursorEl;
-    this.speed = options.speed || 55;
-    this.pauseBetween = options.pauseBetween || 2200;
+    this.speed = options.speed || 38;
+    this.pauseBetween = options.pauseBetween || 1400;
     this.onComplete = options.onComplete || (() => {});
     this.audioContext = null;
+    this.voiceEnabled = options.voiceEnabled !== false;
+    this.chaos = options.chaos || 0.18;
   }
 
   _initAudio() {
@@ -21,7 +23,7 @@ class Typewriter {
   }
 
   _playKeySound() {
-    if (!this.audioContext) return;
+    if (!this.voiceEnabled || !this.audioContext) return;
 
     if (this.audioContext.state === 'suspended') {
       this.audioContext.resume();
@@ -31,16 +33,16 @@ class Typewriter {
     const gain = this.audioContext.createGain();
 
     osc.type = 'sine';
-    osc.frequency.setValueAtTime(800 + Math.random() * 400, this.audioContext.currentTime);
+    osc.frequency.setValueAtTime(720 + Math.random() * 180, this.audioContext.currentTime);
 
-    gain.gain.setValueAtTime(0.04, this.audioContext.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, this.audioContext.currentTime + 0.05);
+    gain.gain.setValueAtTime(0.008, this.audioContext.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.0005, this.audioContext.currentTime + 0.04);
 
     osc.connect(gain);
     gain.connect(this.audioContext.destination);
 
     osc.start(this.audioContext.currentTime);
-    osc.stop(this.audioContext.currentTime + 0.05);
+    osc.stop(this.audioContext.currentTime + 0.04);
   }
 
   async typeMessages(messages) {
@@ -58,7 +60,7 @@ class Typewriter {
     }
 
     this.cursorEl.classList.remove('active');
-    await this._wait(3000);
+    await this._wait(1400);
     this.onComplete();
   }
 
@@ -72,7 +74,8 @@ class Typewriter {
           this.textEl.textContent += message[i];
           this._playKeySound();
           i++;
-          setTimeout(tick, this.speed + Math.random() * 30);
+          const jitter = (Math.random() - 0.5) * this.chaos * 40;
+          setTimeout(tick, this.speed + jitter);
         } else {
           resolve();
         }
