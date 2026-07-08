@@ -543,6 +543,7 @@ class CinematicExperience {
   _start() {
     this._showGestureHint();
     this._runIntro();
+    setTimeout(() => this._hideGestureHint(), 4000);
   }
 
   /* ─── Scene Management ─── */
