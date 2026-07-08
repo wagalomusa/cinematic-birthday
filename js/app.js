@@ -483,7 +483,6 @@ class CinematicExperience {
 
       this.audioUnlocked = true;
       this._resumeAudioContext();
-      this._hideGestureHint();
 
       if (this.pendingPlayback === 'voice') {
         this.pendingPlayback = null;
@@ -543,7 +542,6 @@ class CinematicExperience {
   _start() {
     this._showGestureHint();
     this._runIntro();
-    setTimeout(() => this._hideGestureHint(), 4000);
   }
 
   /* ─── Scene Management ─── */
@@ -574,6 +572,7 @@ class CinematicExperience {
 
     if (nextScene === 'story' && this.currentScene === 'intro') {
       this.skipIntroAdvance = true;
+      this._hideGestureHint();
     }
 
     if (nextScene === 'intro') {
@@ -613,12 +612,15 @@ class CinematicExperience {
     const cursorEl = document.getElementById('typewriter-cursor');
     this.skipIntroAdvance = false;
 
+    this._showGestureHint();
+
     const typewriter = new Typewriter(textEl, cursorEl, {
       speed: 28,
       pauseBetween: 1200,
       chaos: 0.12,
       voiceEnabled: true,
       onComplete: () => {
+        this._hideGestureHint();
         if (this.skipIntroAdvance) return;
         this._goToScene('story').then(() => this._runStory());
       },
