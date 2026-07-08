@@ -615,14 +615,18 @@ class CinematicExperience {
     this._showGestureHint();
 
     const typewriter = new Typewriter(textEl, cursorEl, {
-      speed: 28,
-      pauseBetween: 1200,
-      chaos: 0.12,
+      speed: 12,
+      pauseBetween: 800,
+      messageBaseDelay: 560,
+      characterDelay: 10,
+      chaos: 0.08,
       voiceEnabled: true,
       onComplete: () => {
         this._hideGestureHint();
         if (this.skipIntroAdvance) return;
-        this._goToScene('story').then(() => this._runStory());
+        this._wait(2200).then(() => {
+          this._goToScene('story').then(() => this._runStory());
+        });
       },
     });
 

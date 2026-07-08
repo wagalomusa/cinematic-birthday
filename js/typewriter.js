@@ -5,8 +5,10 @@ class Typewriter {
   constructor(textEl, cursorEl, options = {}) {
     this.textEl = textEl;
     this.cursorEl = cursorEl;
-    this.speed = options.speed || 38;
-    this.pauseBetween = options.pauseBetween || 1400;
+    this.speed = options.speed || 12;
+    this.pauseBetween = options.pauseBetween || 800;
+    this.messageBaseDelay = options.messageBaseDelay || 560;
+    this.characterDelay = options.characterDelay || this.speed;
     this.onComplete = options.onComplete || (() => {});
     this.audioContext = null;
     this.voiceEnabled = options.voiceEnabled !== false;
@@ -71,7 +73,7 @@ class Typewriter {
       this.textEl.classList.add('line-reveal');
       this._playKeySound();
 
-      setTimeout(resolve, 700 + message.length * 10);
+      setTimeout(resolve, this.messageBaseDelay + message.length * this.characterDelay);
     });
   }
 

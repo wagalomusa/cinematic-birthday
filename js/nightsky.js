@@ -129,8 +129,8 @@ class NightSky {
   _generateStars() {
     // Slightly lower density than before — fewer, more deliberate
     // stars reads just as rich but costs meaningfully less per frame.
-    const density = 1 / 5200;
-    const count = Math.max(36, Math.floor(this.width * this.height * density));
+    const density = 1 / 6200;
+    const count = Math.max(28, Math.floor(this.width * this.height * density));
     this.stars = [];
 
     for (let i = 0; i < count; i++) {
@@ -138,17 +138,17 @@ class NightSky {
       let radius, speed, baseAlpha;
 
       if (roll < 0.6) {
-        radius = 0.5 + Math.random() * 0.5;
-        baseAlpha = 0.25 + Math.random() * 0.3;
-        speed = 0.4 + Math.random() * 0.5;
+        radius = 0.5 + Math.random() * 0.4;
+        baseAlpha = 0.16 + Math.random() * 0.2;
+        speed = 0.3 + Math.random() * 0.4;
       } else if (roll < 0.9) {
-        radius = 0.9 + Math.random() * 0.6;
-        baseAlpha = 0.45 + Math.random() * 0.3;
-        speed = 0.6 + Math.random() * 0.6;
+        radius = 0.8 + Math.random() * 0.5;
+        baseAlpha = 0.3 + Math.random() * 0.2;
+        speed = 0.45 + Math.random() * 0.45;
       } else {
-        radius = 1.4 + Math.random() * 0.8;
-        baseAlpha = 0.65 + Math.random() * 0.3;
-        speed = 0.8 + Math.random() * 0.8;
+        radius = 1.1 + Math.random() * 0.6;
+        baseAlpha = 0.42 + Math.random() * 0.2;
+        speed = 0.6 + Math.random() * 0.55;
       }
 
       const paletteRoll = Math.random();
@@ -169,7 +169,7 @@ class NightSky {
         // Only the brighter/larger third of stars get a glow sprite
         // drawn behind them — small dim stars don't need one, and
         // skipping it for most stars is a big chunk of the savings.
-        glow: roll >= 0.92,
+        glow: roll >= 0.96,
       });
     }
   }
@@ -228,9 +228,9 @@ class NightSky {
       radius: 1 + Math.random() * 1.6,
       alpha: 0,
       swayPhase: Math.random() * Math.PI * 2,
-      swaySpeed: 0.3 + Math.random() * 0.4,
-      swayAmp: 12 + Math.random() * 22,
-      riseSpeed: 5 + Math.random() * 9,
+      swaySpeed: 0.22 + Math.random() * 0.24,
+      swayAmp: 8 + Math.random() * 12,
+      riseSpeed: 3 + Math.random() * 5,
       hue: Math.random() < 0.5 ? 'pink' : 'gold',
       age: 0,
       fadeIn: 1.5 + Math.random(),
@@ -248,11 +248,11 @@ class NightSky {
       const fadeOutStart = f.lifespan - 2.5;
       let targetAlpha;
       if (f.age < f.fadeIn) {
-        targetAlpha = Math.min(1, f.age / f.fadeIn) * 0.7;
+        targetAlpha = Math.min(1, f.age / f.fadeIn) * 0.45;
       } else if (f.age > fadeOutStart) {
-        targetAlpha = Math.max(0, (f.lifespan - f.age) / 2.5) * 0.7;
+        targetAlpha = Math.max(0, (f.lifespan - f.age) / 2.5) * 0.45;
       } else {
-        targetAlpha = 0.7;
+        targetAlpha = 0.45;
       }
       f.alpha = targetAlpha;
 
