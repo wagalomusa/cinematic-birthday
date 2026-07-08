@@ -55,33 +55,23 @@ class Typewriter {
 
       if (m < messages.length - 1) {
         await this._wait(this.pauseBetween);
-        this.textEl.textContent = '';
       }
     }
 
     this.cursorEl.classList.remove('active');
-    await this._wait(1400);
+    await this._wait(1000);
     this.onComplete();
   }
 
   _typeSingle(message) {
     return new Promise((resolve) => {
-      let i = 0;
-      this.textEl.textContent = '';
+      this.textEl.classList.remove('line-reveal');
+      void this.textEl.offsetWidth;
+      this.textEl.textContent = message;
+      this.textEl.classList.add('line-reveal');
+      this._playKeySound();
 
-      const tick = () => {
-        if (i < message.length) {
-          this.textEl.textContent += message[i];
-          this._playKeySound();
-          i++;
-          const jitter = (Math.random() - 0.5) * this.chaos * 40;
-          setTimeout(tick, this.speed + jitter);
-        } else {
-          resolve();
-        }
-      };
-
-      tick();
+      setTimeout(resolve, 700 + message.length * 10);
     });
   }
 

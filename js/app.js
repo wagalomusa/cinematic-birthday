@@ -16,19 +16,6 @@ const CONFIG = {
   voiceMessages: [
     {
       id: 1,
-      speaker: 'Mummy',
-      subtitle: 'sent you all her love',
-      audio: 'audio-mummy',
-      portrait: 'assets/images/speakers/Mummy.jpeg',
-      skin: 'rose',
-      visualizer: {
-        color: 'rgba(255, 182, 193, 0.85)',
-        glowColor: 'rgba(255, 140, 170, 0.4)',
-        secondaryColor: 'rgba(255, 210, 220, 0.7)',
-      },
-    },
-    {
-      id: 2,
       speaker: 'Raniah',
       subtitle: 'has something beautiful to say',
       audio: 'audio-raniah',
@@ -41,7 +28,7 @@ const CONFIG = {
       },
     },
     {
-      id: 3,
+      id: 2,
       speaker: 'Marie',
       subtitle: 'wants you to know something',
       audio: 'audio-marie',
@@ -54,7 +41,7 @@ const CONFIG = {
       },
     },
     {
-      id: 4,
+      id: 3,
       speaker: 'Bahiga',
       subtitle: 'left you a precious message',
       audio: 'audio-bahiga',
@@ -67,7 +54,7 @@ const CONFIG = {
       },
     },
     {
-      id: 5,
+      id: 4,
       speaker: 'Leylah',
       subtitle: 'has words from the heart',
       audio: 'audio-leylah',
@@ -80,7 +67,7 @@ const CONFIG = {
       },
     },
     {
-      id: 6,
+      id: 5,
       speaker: 'Glosh',
       subtitle: 'sent you a special message',
       audio: 'audio-glosh',
@@ -719,7 +706,20 @@ class CinematicExperience {
     try {
       await this.currentAudio.play();
     } catch (err) {
-      console.warn('Voice message failed to play (missing file or blocked) — advancing automatically', err);
+      const isAutoplayBlocked = err.name === 'NotAllowedError' || err.name === 'AbortError';
+      if (isAutoplayBlocked) {
+        console.warn('Voice playback is waiting for a user gesture — tap play to continue.', err);
+        this.isPlaying = false;
+        this.isPaused = true;
+        this._setPlayState(false);
+        this.voiceCard.classList.remove('playing');
+        this.voiceVisualizer.stop();
+        this._stopProgressLoop();
+        this._releaseWakeLock();
+        return;
+      }
+
+      console.warn('Voice message failed to play (missing file or unsupported source) — advancing automatically', err);
       this._handleVoicePlaybackFailure();
       return;
     }
@@ -1002,9 +1002,16 @@ class CinematicExperience {
     try {
       await this.audioSong.play();
     } catch (err) {
-      // Autoplay was blocked by the browser — show the play button
-      // so the person can start it with a tap instead.
-      console.warn('Song autoplay blocked — tap play to start', err);
+      const isAutoplayBlocked = err.name === 'NotAllowedError' || err.name === 'AbortError';
+      if (isAutoplayBlocked) {
+        console.warn('Song autoplay blocked — tap play to start', err);
+        this._setSongPlayState(false);
+        this.isSongPlaying = false;
+        this.isSongPaused = false;
+        return;
+      }
+
+      console.warn('Song playback failed — tap play to try again', err);
       this._setSongPlayState(false);
       this.isSongPlaying = false;
       this.isSongPaused = false;
