@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>For You ✨</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Great+Vibes&family=Montserrat:wght@200;300;400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <div id="app">
+
+    <!-- ═══════════════════════════════════════
+         SCENE 1 — INTRO (Night Sky)
+         ═══════════════════════════════════════ -->
+    <section id="scene-intro" class="scene active">
+      <div class="night-sky">
+        <canvas id="nightsky-canvas" class="nightsky-canvas"></canvas>
+        <div class="aurora"></div>
+        <div class="stardust-mist"></div>
+        <div class="moon">
+          <div class="moon-glow"></div>
+        </div>
+      </div>
+      <div class="scene-content intro-content">
+        <div id="typewriter-container" class="typewriter-container">
+          <p id="typewriter-text" class="typewriter-text"></p>
+          <span id="typewriter-cursor" class="typewriter-cursor">|</span>
+        </div>
+        <button class="scene-next-btn" data-next-scene="story" type="button">Next</button>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════
+         SCENE 2 — STORY (Image Sequence)
+         ═══════════════════════════════════════ -->
+    <section id="scene-story" class="scene">
+      <div class="story-backdrop"></div>
+      <div class="story-slides">
+        <div class="story-slide" data-index="0">
+          <div class="story-image" style="background-image: url('assets/images/1.jpg')"></div>
+          <p class="story-caption">Real photo of deep space the day you were born</p>
+        </div>
+        <div class="story-slide" data-index="1">
+          <div class="story-image" style="background-image: url('assets/images/Memories.jpeg')"></div>
+          <p class="story-caption">Every laugh, every moment, etched in our hearts</p>
+        </div>
+        <div class="story-slide" data-index="2">
+          <div class="story-image" style="background-image: url('assets/images/Eyes.jpeg')"></div>
+          <p class="story-caption">The eyes that bother Sham (haha)</p>
+        </div>
+        <div class="story-slide" data-index="3">
+          <div class="story-image" style="background-image: url('assets/images/Smile.jpeg')"></div>
+          <p class="story-caption">The Smile that holds Sham firm</p>
+        </div>
+        <div class="story-slide" data-index="4">
+          <div class="story-image" style="background-image: url('assets/images/The day i met you.jpeg')"></div>
+          <p class="story-caption">The gentle day I met you</p>
+        </div>
+      </div>
+      <div class="story-vignette"></div>
+      <button class="scene-next-btn" data-next-scene="voices" type="button">Next</button>
+    </section>
+
+    <!-- ═══════════════════════════════════════
+         SCENE 3 — VOICE MESSAGES
+         ═══════════════════════════════════════ -->
+    <section id="scene-voices" class="scene">
+      <div class="voices-backdrop">
+        <div class="voices-sparkles"></div>
+      </div>
+      <div class="scene-content voices-content">
+
+        <!-- Premium voice player skin -->
+        <div id="voice-card" class="voice-player" data-skin="rose">
+
+          <!-- Decorative frame -->
+          <div class="player-ornament player-ornament--top">✦</div>
+          <div class="player-ornament player-ornament--bottom">♡</div>
+
+          <div class="player-header">
+            <span id="voice-label" class="voice-label">Message 1 of 5</span>
+          </div>
+
+          <!-- Portrait with glowing ring -->
+          <div class="portrait-frame">
+            <div class="portrait-ring portrait-ring--outer"></div>
+            <div class="portrait-ring portrait-ring--inner"></div>
+            <div class="portrait-glow"></div>
+            <img id="voice-portrait" class="voice-portrait" src="assets/images/speakers/friend.svg" alt="Speaker">
+            <div class="portrait-sparkle portrait-sparkle--1">✧</div>
+            <div class="portrait-sparkle portrait-sparkle--2">✦</div>
+          </div>
+
+          <!-- Speaker info -->
+          <div class="speaker-info">
+            <h3 id="voice-speaker" class="voice-speaker">Your Best Friend</h3>
+            <p id="voice-subtitle" class="voice-subtitle">sent you all their love</p>
+          </div>
+
+          <!-- Visualizer -->
+          <div class="visualizer-shell">
+            <canvas id="voice-visualizer" class="voice-visualizer"></canvas>
+            <div class="visualizer-shimmer"></div>
+          </div>
+
+          <!-- Progress -->
+          <div class="player-progress">
+            <div class="progress-track">
+              <div id="progress-fill" class="progress-fill"></div>
+            </div>
+            <div class="progress-times">
+              <span id="time-current" class="time-current">0:00</span>
+              <span id="time-duration" class="time-duration">0:00</span>
+            </div>
+          </div>
+
+          <!-- Controls -->
+          <div class="player-controls">
+            <button id="btn-play" class="control-btn control-btn--play" aria-label="Play">
+              <svg class="icon-play" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+              <svg class="icon-pause hidden" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+            </button>
+            <button id="btn-next" class="control-btn control-btn--next" aria-label="Next message">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
+              <span class="btn-label">Next</span>
+            </button>
+          </div>
+
+          <!-- Message dots -->
+          <div id="voice-dots" class="voice-dots"></div>
+
+        </div>
+
+        <!-- Transition overlay -->
+        <div id="voice-transition" class="voice-transition hidden">
+          <p id="transition-message" class="transition-message"></p>
+          <div id="countdown" class="countdown hidden">
+            <span id="countdown-number" class="countdown-number">3</span>
+          </div>
+        </div>
+        <button class="scene-next-btn" data-next-scene="song" type="button">Next</button>
+
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════
+         SCENE 4 — SUNO SONG FINALE
+         ═══════════════════════════════════════ -->
+    <section id="scene-song" class="scene">
+      <div class="song-backdrop"></div>
+      <div class="scene-content song-content">
+        <div class="song-player glass">
+          <p class="song-label">A song made just for you</p>
+          <h2 class="song-title">Happy Birthday</h2>
+
+          <canvas id="song-visualizer" class="song-visualizer"></canvas>
+          <div class="song-waveform-glow"></div>
+
+          <!-- Lyrics -->
+          <div id="song-lyrics" class="song-lyrics" aria-live="polite"></div>
+
+          <!-- Progress -->
+          <div class="player-progress">
+            <div class="progress-track">
+              <div id="song-progress-fill" class="progress-fill"></div>
+            </div>
+            <div class="progress-times">
+              <span id="song-time-current" class="time-current">0:00</span>
+              <span id="song-time-duration" class="time-duration">0:00</span>
+            </div>
+          </div>
+
+          <!-- Controls -->
+          <div class="player-controls song-player-controls">
+            <button id="btn-song-play" class="control-btn control-btn--play" aria-label="Play song">
+              <svg class="icon-play" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+              <svg class="icon-pause hidden" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+            </button>
+          </div>
+        </div>
+        <button class="scene-next-btn" data-next-scene="ending" type="button">Next</button>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════
+         SCENE 5 — ENDING (Sunrise)
+         ═══════════════════════════════════════ -->
+    <section id="scene-ending" class="scene">
+      <div class="sunrise-sky">
+        <div class="sun"></div>
+        <div class="cloud cloud-1"></div>
+        <div class="cloud cloud-2"></div>
+        <div class="cloud cloud-3"></div>
+        <div class="sunrise-glow"></div>
+      </div>
+      <div class="scene-content ending-content">
+        <p class="ending-script">Happy Birthday Beautiful</p>
+        <h1 class="ending-message">I have met many a number of people,<br>But you are completely one of a kind<br>Am so incredibly glad that our paths crossed and I hope today brings you as much joy as you give to those around you.</h1>
+        <p class="ending-sub">With Admiration, Sham ✨</p>
+        <button class="scene-next-btn" data-next-scene="intro" type="button">Start Again</button>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Hidden audio elements -->
+  <audio id="audio-mummy" preload="auto" src="assets/audio/mummy.mp3"></audio>
+  <audio id="audio-raniah" preload="auto" src="assets/audio/raniah.mp3"></audio>
+  <audio id="audio-marie" preload="auto" src="assets/audio/marie.mp3"></audio>
+  <audio id="audio-bahiga" preload="auto" src="assets/audio/bahiga.mp3"></audio>
+  <audio id="audio-leylah" preload="auto" src="assets/audio/leylah.mp3"></audio>
+  <audio id="audio-glosh" preload="auto" src="assets/audio/glosh.mp3"></audio>
+  <audio id="audio-song" preload="auto" src="assets/audio/finale-song.mp3"></audio>
+
+  <script src="js/visualizer.js"></script>
+  <script src="js/nightsky.js"></script>
+  <script src="js/typewriter.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
